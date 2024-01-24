@@ -1,0 +1,12 @@
+{% extends 'buyer/side.html' %}
+
+{% block content %}
+    <div class="applicaut">
+        <h2>Products List</h2>
+        <ul>
+            {% for product in products %}
+                <li><a href="{% url 'product' pk=product.pk %}">{{ product.name }}<br>{{ product.price }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

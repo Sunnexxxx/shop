@@ -1,0 +1,13 @@
+{% extends 'owner/base.html' %}
+
+{% block content %}
+    <div class="delete">
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete the vacancy "{{ object.name }}"?</p>
+        <form method="post" action="{% url 'product_delete' pk=object.pk %}">
+            {% csrf_token %}
+            <button class="delete_btn" type="submit">Yes, delete it</button>
+        </form>
+        <a href="{% url 'owner' %}">No, go back</a>
+    </div>
+{% endblock %}

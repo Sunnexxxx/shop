@@ -1,0 +1,13 @@
+{% extends 'owner/base.html' %}
+
+{% block content %}
+    <div class="create">
+        <h2>Update Product</h2>
+        <form method="post" action="{% url 'product_update' pk=product.pk %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="update_btn" type="submit">Update</button>
+        </form>
+        <a href="{% url 'owner' %}">Back</a>
+    </div>
+{% endblock %}

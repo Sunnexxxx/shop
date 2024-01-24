@@ -1,0 +1,15 @@
+{% extends 'main/layout.html' %}
+
+{% block content %}
+<div class="register">
+    <h1>Register page</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% for f in form %}
+            <p class="reg">{{ f.label_tag }} {{ f }}</p>
+        {% endfor %}
+        <button class="sign" type="submit">Register</button>
+    </form>
+    <a href="{% url 'main' %}">Back</a>
+</div>
+{% endblock %}

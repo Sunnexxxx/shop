@@ -1,0 +1,17 @@
+{% extends 'owner/base.html' %}
+
+{% block content %}
+    <div class="vacation">
+        <h2>Your Products</h2>
+        {% for product in products %}
+            <div class="vacancies">
+                <p><a href="{% url 'detail_o' pk=product.pk %}">{{ product.name }} - {{ product.price }}</a></p>
+                <div class="vacancies_2">
+                    <p><a href="{% url 'product_update' pk=product.pk %}">Update</a></p>
+                    <p><a href="{% url 'product_delete' pk=product.pk %}">Delete</a></p>
+                </div>
+            </div>
+        {% endfor %}
+        <a href="{% url 'owner' %}">Back</a>
+    </div>
+{% endblock %}

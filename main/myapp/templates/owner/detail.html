@@ -1,0 +1,18 @@
+{% extends 'owner/base.html' %}
+
+
+{% block content %}
+    <div class="detail">
+        <h2>{{ product.name }}</h2>
+        <p>Price: {{ product.price }}</p>
+        <p>Salary: {{ product.quantity }}</p>
+        <p>Skills: {{ product.category }}</p>
+        <p>Duties: {{ product.description }}</p>
+        <a href="javascript:void(0);" onclick="goBack()">Back</a>
+        <script>
+            function goBack() {
+                window.history.back();
+            }
+        </script>
+    </div>
+{% endblock %}
