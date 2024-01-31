@@ -1,48 +1,35 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.text import slugify
-
-
-class ProductCategory(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
 
 
 class Product(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    name = models.CharField('Name', max_length=255)
-    price = models.PositiveIntegerField('Price', default=0)
-    quantity = models.PositiveIntegerField('Quantity')
-    category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL, verbose_name="Category", null=True)
-    description = models.TextField('Description', max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField('Slug', max_length=255, blank=True, unique=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    photo = models.ImageField(upload_to="media/")
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    availability = models.BooleanField(default=True)
 
-    def __str__(self):
-        return f"{self.name} {self.price} {self.category}"
+    def add_order(self, quantity, user):
+        order = Order.objects.create(customer=user)
+        product_in_order = ProductInOrder(product=self, order=order, quantity=quantity)
+        product_in_order.save()
+        order.total_amount = order.get_total_amount()
+        order.save()
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
-        self.slug = slugify(f"{self.name} - {self.price}")
-        super().save(force_insert, force_update, using, update_fields)
+        return order
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
-    quantity = models.PositiveIntegerField('Quantity')
+    order_number = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
-    slug = models.SlugField('Slug', max_length=255, blank=True, unique=True)
-    paid = models.BooleanField('Paid', default=False)
-    delivered = models.BooleanField('Delivered', default=False)
-    paid_at = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.user} {self.product}"
+    status = models.CharField(max_length=255)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
+class ProductInOrder(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
 
 

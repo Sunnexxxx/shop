@@ -13,6 +13,6 @@ urlpatterns = [
     path('product/<int:pk>', Detail.as_view(), name='product'),
     path('vacancy/<int:pk>/update/', ProductUpdate.as_view(), name='product_update'),
     path('vacancy/<int:pk>/delete/', ProductDelete.as_view(), name='product_delete'),
-    path('detail_owner/<int:pk>/', Detail_owner.as_view(), name='detail_o'),
-    path('add_to_cart/<int:pk>/', AddToCart.as_view(), name='add_to_cart')
+    path('detail_owner/<int:pk>/', DetailOwner.as_view(), name='detail_o'),
+
     ]

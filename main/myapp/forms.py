@@ -15,4 +15,4 @@ class CustomUserCreationForm(UserCreationForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'price', 'quantity', 'category']
+        fields = ['name', 'price']

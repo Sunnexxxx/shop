@@ -52,8 +52,8 @@ class Owner(ListView):
     template_name = 'owner/owner.html'
     context_object_name = 'products'
 
-    def get_queryset(self):
-        return Product.objects.filter(user=self.request.user)
+    # def get_queryset(self):
+    #     return Product.objects.filter(user=self.request.user)
 
 
 class ProductCreate(CreateView):
@@ -96,69 +96,15 @@ class Detail(DetailView):
     template_name = 'buyer/detail.html'
     context_object_name = 'product'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['add_to_cart_url'] = reverse('add_to_cart', args=[self.object.pk])
-        return context
 
-
-class AddToCart(View):
-    # def get(self, request, pk):
-    #     product = get_object_or_404(Product, pk=pk)
-    #     request.session['cart'] = request.session.get('cart', [])
-    #
-    #     if product in request.session['cart']:
-    #         request.session['cart'].remove(product)
-    #         return redirect('product', pk=pk)
-    #     else:
-    #         request.session['cart'].append(product)
-    #         return redirect('product', pk=pk)
-
-    # def get(self, request, pk):
-    #     product = get_object_or_404(Product, pk=pk)
-    #     cart = request.session.get('cart', [])
-    #
-    #     if product in cart:
-    #         cart.remove(product)
-    #     else:
-    #         cart.append(product)
-    #
-    #     request.session['cart'] = cart
-    #     return redirect('product', pk=pk)
-
-    def get(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        cart = request.session.get('cart', [])
-        if not cart:
-            cart = []
-        cart.append(product)
-        request.session['cart'] = cart
-        return redirect('product', pk=product.id)
-
-
-class Cart:
-    def __init__(self):
-        self.products = []
-        self.quantity = {}
-
-    def add_product(self, product, quantity=1):
-        self.products.append(product)
-        self.quantity[product.id] = quantity
-
-    def get_total_price(self):
-        total_price = 0
-        for product in self.products:
-            total_price += product.price * self.quantity[product.id]
-        return total_price
-
-    def get_total_quantity(self):
-        total_quantity = 0
-        for product in self.products:
-            total_quantity += self.quantity[product.id]
-        return total_quantity
-
-
-class Detail_owner(DetailView):
+class DetailOwner(DetailView):
     model = Product
     template_name = 'owner/detail.html'
     context_object_name = 'product'
+
+
+
+
+
+
+
