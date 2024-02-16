@@ -5,10 +5,11 @@
     <div class="detail">
         <h2>{{ product.name }}</h2>
         <p>Price: {{ product.price }}</p>
-        <p>Salary: {{ product.quantity }}</p>
-        <p>Skills: {{ product.category }}</p>
-        <p>Duties: {{ product.description }}</p>
+        <p>Quantity: {{ product.quantity }}</p>
+        <p>Category: {{ product.category }}</p>
+        <p>Description: {{ product.description }}</p>
         <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
+        <a href="{% url 'cart' %}" class="btn btn-secondary">Go to Cart</a>
         <a href="javascript:void(0);" onclick="goBack()">Back</a>
         <script>
             function goBack() {

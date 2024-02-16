@@ -1,20 +1,28 @@
-{% extends 'base.html' %}
-
+{% extends 'buyer/side.html' %}
 {% block content %}
-    <h2>Корзина</h2>
+<h1>Shopping Cart</h1>
+<ul>
+    {% for product_in_cart in products_in_cart %}
+        <li>
+            <strong>{{ product_in_cart.product.name }}</strong> - Quantity: {{ product_in_cart.quantity }} - Price: {{ product_in_cart.product.price|add:0 }} * {{ product_in_cart.quantity }}
+            <form method="post" action="{% url 'cart' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="product_in_order_id" value="{{ product_in_cart.id }}">
+                <input type="number" name="quantity" value="{{ product_in_cart.quantity }}">
+                <button type="submit">Update Quantity</button>
+            </form>
+            <form method="post" action="{% url 'cart' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="product_in_order_id" value="{{ product_in_cart.id }}">
+                <button type="submit">Delete from Cart</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
 
-    <ul>
-        {% for cart_item in cart.items.all %}
-            <li>
-                <a href="{% url 'product_detail' cart_item.product.id %}">
-                    {{ cart_item.product.name }}
-                </a>
-                <span>{{ cart_item.quantity }}</span>
-            </li>
-        {% endfor %}
-    </ul>
+<p>Total Amount: {{ total_amount }}</p>
 
-    <p>
-        Общая сумма: {{ cart.total_price }}
-    </p>
 {% endblock %}
+
