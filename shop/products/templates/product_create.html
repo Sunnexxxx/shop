@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+</style>
+<div class="container mt-5">
+    <h1 class="mb-4">Create Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+        </div>
+        <div class="mb-3">
+            {{ form.price.label_tag }}
+            {{ form.price }}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+        </div>
+        <div class="mb-3">
+            {{ form.category.label_tag }}
+            {{ form.category }}
+        </div>
+        <div class="mb-3">
+            {{ form.image.label_tag }}
+            {{ form.image }}
+        </div>
+        <div class="mb-3">
+            {{ form.stock.label_tag }}
+            {{ form.stock }}
+        </div>
+        {{ form.seller }}
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="{% url 'seller_product_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% load custom_filters %}
+{% block content %}
+    <div class="container">
+        <div class="register">
+            {% if error_message %}
+                <div class="alert alert-danger">{{ error_message }}</div>
+            {% endif %}
+            <h1 class="mb-2">Register</h1>
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-2">
+                        {{ field.label_tag }}<br>
+                        {{ field|add_class:"form-control" }}<br>
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button class="btn btn-primary sign" type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

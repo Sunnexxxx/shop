@@ -1,0 +1,73 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Order ID: {{ order.id }}</h6>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr data-item-id="{{ item.id }}">
+                                <td>{{ item.product.name }}</td>
+                                <td>
+                                    <p type="number" style="width: 70px;">{{ item.quantity }}</p>
+                                </td>
+                                <td>{{ item.product.price }}</td>
+                                <td class="total-price">{{ item.get_total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p>Total: <span id="order-total">{{ order_total_price }}</span></p>
+                    <a href="{% url 'order_list' %}" class="btn btn-secondary">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const updateQuantityInputs = document.querySelectorAll('.update-quantity');
+
+        updateQuantityInputs.forEach(input => {
+            input.addEventListener('change', function () {
+                const itemId = this.closest('tr').dataset.itemId;
+                const newQuantity = this.value;
+
+                fetch(`{% url 'update_order_item' 0 %}`.replace('0', itemId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.closest('tr').querySelector('.total-price').textContent = data.item_total;
+                        document.getElementById('order-total').textContent = data.order_total;
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

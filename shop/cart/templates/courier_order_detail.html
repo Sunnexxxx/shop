@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Order Details</h1>
+        <div class="card">
+            <div class="card-header">
+                <h5>Order ID: {{ order.id }} - {{ order.created_at }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Address</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in order_items %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.product.price }}</td>
+                            <td>{{ buyer.address }}</td>
+                            <td>${{ item.get_total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <p class="text-right"><strong>Total: ${{ order_total_price }}</strong></p>
+                <form method="post">
+                    {% csrf_token %}
+                    {% if order.status == 'in_progress' %}
+                        <button type="submit" name="accept_order" class="btn btn-primary">Accept Order</button>
+                    {% elif order.status == 'delivered' %}
+                        <button type="submit" name="mark_completed" class="btn btn-success">Mark as Completed</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

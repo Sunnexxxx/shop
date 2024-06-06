@@ -1,0 +1,188 @@
+{% extends 'layout.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<style>
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 270px;  /* Adjusted height for better layout */
+    }
+
+    .card-title, .card-text {
+        margin-bottom: 10px;
+    }
+
+    .card-buttons {
+        margin-top: auto;
+    }
+
+    .pagination {
+        margin-top: 20px;
+    }
+</style>
+
+<section class="home">
+    <div class="container mt-5">
+        <h1 class="mb-4">Product List</h1>
+        <div class="row">
+            <form method="get" class="row g-3 mb-4">
+                <div class="col-md-4">
+                    {{ filter_form.category|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ filter_form.sort_by|as_crispy_field }}
+                </div>
+                <div class="col-md-4">
+                    {{ search_form.query|as_crispy_field }}
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
+
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                {% for product in products %}
+                    <div class="col mb-4">
+                        <div class="card h-100 shadow">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top product-image"
+                                     alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150" class="card-img-top product-image"
+                                     alt="No image available">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.category }}</p>
+                                <p class="card-text"><strong>${{ product.price }}</strong></p>
+                                <div class="card-buttons">
+                                    <a href="{% url 'detail' product.pk %}" class="btn btn-primary mb-2">View Details</a>
+                                    {% if user.is_authenticated %}
+                                        {% if product.stock > 0 %}
+                                            <form method="post" action="{% url 'add_to_cart' %}" class="add-to-cart-form d-flex align-items-center">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                <div class="form-group mb-2 me-2" style="width: 100px;">
+                                                    {{ add_to_cart_form.quantity|as_crispy_field }}
+                                                </div>
+                                                <button type="submit" name="add_to_cart" class="btn btn-success" style="margin-top: -20px;">
+                                                    Add to Cart
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <p class="text-danger">Out of Stock</p>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="?page=1{% if filter_form.category.value %}&category={{ filter_form.category.value }}{% endif %}{% if filter_form.sort_by.value %}&sort_by={{ filter_form.sort_by.value }}{% endif %}"
+                               aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_form.category.value %}&category={{ filter_form.category.value }}{% endif %}{% if filter_form.sort_by.value %}&sort_by={{ filter_form.sort_by.value }}{% endif %}"
+                               aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if filter_form.category.value %}&category={{ filter_form.category.value }}{% endif %}{% if filter_form.sort_by.value %}&sort_by={{ filter_form.sort_by.value }}{% endif %}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_form.category.value %}&category={{ filter_form.category.value }}{% endif %}{% if filter_form.sort_by.value %}&sort_by={{ filter_form.sort_by.value }}{% endif %}"
+                               aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if filter_form.category.value %}&category={{ filter_form.category.value }}{% endif %}{% if filter_form.sort_by.value %}&sort_by={{ filter_form.sort_by.value }}{% endif %}"
+                               aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.add-to-cart-form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Added to Cart',
+                            text: 'Item added to your cart successfully!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An error occurred',
+                        text: 'Please try again later.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock %}

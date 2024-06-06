@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+        <style>
+    body {
+        background-color:#e4e9f7;
+    }
+</style>
+<div class="container mt-5">
+    <h1 class="mb-4">My Products</h1>
+    <a href="{% url 'create' %}" class="btn btn-success mb-3">Add New Product</a>
+    <a href="{% url 'goods' %}" class="btn btn-secondary mb-3">Back</a>
+    <div class="row">
+        {% for product in products %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product.description }}</p>
+                        <p class="card-text">${{ product.price }}</p>
+                        <a href="{% url 'product_update' product.pk %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if is_paginated %}
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

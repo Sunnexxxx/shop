@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<style>
+    .d-flex .form-group {
+        margin-top: 25px;
+    }
+</style>
+<section class="home">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" class="img-fluid" alt="No image available">
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <h1>{{ product.name }}</h1>
+                <p>{{ product.category }}</p>
+                <p><strong>${{ product.price }}</strong></p>
+                <p>{{ product.description }}</p>
+
+                {% if product.stock > 0 %}
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'detail' product.pk %}" class="add-to-cart-form d-flex align-items-center">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <div class="form-group mb-2 me-2">
+                                {{ add_to_cart_form.quantity|as_crispy_field }}
+                            </div>
+                            <button type="submit" name="add_to_cart" class="btn btn-success">Add to Cart</button>
+                        </form>
+                    {% else %}
+                        <p class="text-warning">Please log in to add items to your cart.</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-danger">Out of Stock</p>
+                {% endif %}
+                <a href="{% url 'goods' %}" class="btn btn-secondary">Back</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.add-to-cart-form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Added to Cart',
+                            text: 'Item added to your cart successfully!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An error occurred',
+                        text: 'Please try again later.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock %}
