@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='shop',  # Имя вашего проекта
-    version='0.1',  # Версия вашего проекта
-    packages=find_packages(),  # Найти все пакеты в проекте автоматически
-    include_package_data=True,  # Включить данные пакета, такие как шаблоны и статические файлы
+    name='shop',
+    version='0.1',
+    packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         'asgiref==3.8.1',
         'crispy-bootstrap5==2024.2',
