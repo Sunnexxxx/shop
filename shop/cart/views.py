@@ -257,7 +257,6 @@ def add_to_cart(request):
         return JsonResponse({'success': False, 'error': 'Invalid form submission.'}, status=400)
 
 
-
 class SellerProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'seller_product_list.html'
